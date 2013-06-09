@@ -13,6 +13,8 @@ The files:
 
 * `boolean.scm`  Interpreter (and tests) for a trivial language of Boolean expressions, taken from Pierce's 'Types and Programming Languages'.
 
+* `regex-matching.scm`  Interpreter (and tests) for regular expression matching using parsing with derivatives, taken from https://github.com/webyrd/relational-parsing-with-derivatives/blob/master/mK-empty-set-as-failure/mk-rd.scm.
+
 * `quines.scm`  Interpreter (and tests) for a relational interpreter capable of generating Scheme quines.  Code taken from https://github.com/webyrd/2012-scheme-workshop-quines-paper-code
 
 
