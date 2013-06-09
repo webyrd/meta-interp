@@ -684,3 +684,140 @@
 (test "d/dco-solve-33"
   (run* (q) (d/dco-solve `(d/dco (alt (seq foo bar) (seq foo (rep baz))) foo ,q)))
   '((alt bar (rep baz))))
+
+
+
+
+
+
+(test "d/dco-deriv-14-c"
+  (run* (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (seq foo (rep bar)) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '(((rep bar)
+     (((d/dco (seq foo (rep bar)) foo (rep bar))
+       <--
+       Seq
+       (((d/dco foo foo #t) <-- C ())))))))
+
+(test "d/dco-deriv-14-e"
+  (run* (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco foo foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '((#t (((d/dco foo foo #t) <-- C ())))))
+
+(test "d/dco-deriv-14-f"
+  (run* (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (rep bar) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '())
+
+(test "d/dco-deriv-20-c"
+  (run 1 (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (alt #t (seq foo (rep bar))) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '(((rep bar)
+     (((d/dco (alt #t (seq foo (rep bar))) foo (rep bar))
+       <--
+       Alt
+       (((d/dco (seq foo (rep bar)) foo (rep bar))
+         <--
+         Seq
+         (((d/dco foo foo #t) <-- C ())))))))))
+
+(test "d/dco-deriv-20-cc"
+  (run 1 (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (alt (seq foo (rep bar)) #t) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '(((rep bar)
+     (((d/dco (alt (seq foo (rep bar)) #t) foo (rep bar))
+       <--
+       Alt
+       (((d/dco (seq foo (rep bar)) foo (rep bar))
+         <--
+         Seq
+         (((d/dco foo foo #t) <-- C ())))))))))
+
+(test "d/dco-deriv-20-c1"
+  (run 1 (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco #t foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '())
+
+(test "d/dco-deriv-20-c2"
+  (run 1 (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (seq foo (rep bar)) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '(((rep bar)
+     (((d/dco (seq foo (rep bar)) foo (rep bar))
+       <--
+       Seq
+       (((d/dco foo foo #t) <-- C ())))))))
+
+(test "d/dco-deriv-20-d"
+  (run 1 (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (alt (seq foo (rep bar)) #t) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '(((rep bar)
+     (((d/dco (alt (seq foo (rep bar)) #t) foo (rep bar))
+       <--
+       Alt
+       (((d/dco (seq foo (rep bar)) foo (rep bar))
+         <--
+         Seq
+         (((d/dco foo foo #t) <-- C ())))))))))
+
+(test "d/dco-deriv-20-e"
+;;; illegal alt with duplicate patterns
+  (run 1 (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (alt (seq foo (rep bar)) (seq foo (rep bar))) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '())
+
+(test "d/dco-deriv-31"
+  (run* (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco baz f ,v) tree)
+      (== `(,v ,tree) q)))
+  '())
+
+(test "d/dco-deriv-32"
+  (run* (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (seq foo barn) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '((barn
+     (((d/dco (seq foo barn) foo barn)
+       <--
+       Seq
+       (((d/dco foo foo #t) <-- C ())))))))
+
+(test "d/dco-deriv-33"
+  (run* (q)
+    (fresh (v tree)
+      (d/dco-deriv `(d/dco (alt (seq foo bar) (seq foo (rep baz))) foo ,v) tree)
+      (== `(,v ,tree) q)))
+  '(((alt bar (rep baz))
+     (((d/dco
+        (alt (seq foo bar) (seq foo (rep baz)))
+        foo
+        (alt bar (rep baz)))
+       <--
+       Alt
+       (((d/dco (seq foo bar) foo bar)
+         <--
+         Seq
+         (((d/dco foo foo #t) <-- C ())))
+        ((d/dco (seq foo (rep baz)) foo (rep baz))
+         <--
+         Seq
+         (((d/dco foo foo #t) <-- C ())))))))))
